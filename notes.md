@@ -1,6 +1,6 @@
 # Tabel of Contents
 1. [Key Django Features](#key_django_features)
-2. [Django Project vs. Django App](#django_proj_vs_app)
+2. [Django Project vs. Django Apps)(#django_proj_vs_app)
 3. [Common Commands & Code Snippets](#common_commands_&_code_snippets)
 
 
