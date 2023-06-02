@@ -2,5 +2,5 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
-def index(request):
-    return HttpResponse('THIS IS A VIEW FROM WITHIN MY APP!')
+def simple_view(response):
+    return HttpResponse('SIMPLE VIEW')
