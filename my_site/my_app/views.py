@@ -5,6 +5,7 @@ def example_view(request):
     # my_app/templates/MY_APP/EXAMPLE.HTML
     return render(request, 'my_app/example.html')
 
+
 def variable_view(request):
 
     my_var = {
