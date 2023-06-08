@@ -23,6 +23,10 @@
   - [**Models \& Databases**](#models--databases)
     - [**Django Model Key Concepts**](#django-model-key-concepts)
     - [**Connecting models to create relational databases**](#connecting-models-to-create-relational-databases)
+- [**Dentist Mini-Project**](#dentist-mini-project)
+- [**Models \& Fields:**](#models--fields)
+  - [**Setting up the DB with the `migrate` command**](#setting-up-the-db-with-the-migrate-command)
+- [Creating model fields:](#creating-model-fields)
 
 
 <br><br>
@@ -493,3 +497,52 @@ ALLOWED_HOSTS = ['127.0.0.1']
 - Models can be connected through keys. E.g.
 
 <img src="screenshots/connecting_models.png" width="600">
+
+# **Dentist Mini-Project**
+
+**Created new mini project for following sections**
+
+# **Models & Fields:**
+
+- By default the database `ENGINE` is set as sqlite3, which is included in a python installation.
+- The `NAME` component provides a path to the database.
+
+```
+   # Database
+   # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+   DATABASES = {
+      'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': BASE_DIR / 'db.sqlite3',
+      }
+   }
+```
+- The SQL `ENGINE` can be swapped out easily by following the [documentation guidance](https://docs.djangoproject.com/en/4.2/ref/settings/#databases)
+
+- Several database types are supported 'Out of the box' - assuming you have the correct DB files installed. E.g.
+  - Postgres
+  - mysql
+  - sqlite3
+  - oracle
+- However, additional DBs cab be used by installing additional third party libs. (See databases section of docs for more details)
+
+## **Setting up the DB with the `migrate` command**
+- When initializing a project, you will notice that there is no db.sqlite3 file visible
+- To set up the database (in this case the sqlite3 db), you first need to make sure any apps are registered in the installed apps section of settings.py and then rune the migrate command. That is, in the terminal:
+    - `python manage.py migrate`
+
+# Creating model fields:
+
+- Models can be created through inheritance of django's core models. I.e.
+  - In the apps models.py file, you can create a class (which will ultimately create a DB table) and inherit from `models.Model`. E.g.
+
+```
+   from django.db import models
+
+   # Create your models here.
+   class Patient(models.Model):
+      first_name = models.CharField(max_length=30)
+      last_name = models.CharField(max_length=30)
+      age = models.IntegerField()
+```
