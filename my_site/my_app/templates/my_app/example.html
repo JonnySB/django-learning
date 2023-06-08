@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 
     <h1>Example html template</h1>
     <h1>Using URL names to link between app views</h1>
-    <h2><a href="{% url 'my_app:variable' %}">Click me to go to go back to the variable view rendering the variable.html template</a></h2>
+    <h2>
+        <a href="{% url 'my_app:variable' %}">
+            Click me to go to go back to the variable view rendering the variable.html template
+        </a>
+    </h2>
+
+    <h1>HOW TO MAKE USE OF STATIC:</h1>
+
+    <img src="{% static 'my_app/django.jpg' %}" alt='my_image'>
 
 {% endblock %}
