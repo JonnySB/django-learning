@@ -1,0 +1,13 @@
+Watching for file changes with StatReloader
+[08/Jun/2023 12:59:40] "GET /my_app/ HTTP/1.1" 200 477
+Not Found: /favicon.ico
+[08/Jun/2023 12:59:40] "GET /favicon.ico HTTP/1.1" 404 2218
+[08/Jun/2023 12:59:42] "GET /my_app/ HTTP/1.1" 200 477
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 08, 2023 - 12:59:31
+Django version 4.2.1, using settings 'my_site.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+

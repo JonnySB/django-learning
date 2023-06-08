@@ -12,7 +12,9 @@ def variable_view(request):
         'first_name':'Jonny',
         'last_name':'Brownrigg',
         'some_list':['list item 1','list item 2','list item 3'],
-        'some_dict':{'inside_key':'inside_value'},
+        'some_dict':{'user_name':'test_user', 'password':'testpass123', 'age':26},
+        'logged_in':True,
+        'nums_list':[1,2,3,4,5],
     }
 
     return render(
