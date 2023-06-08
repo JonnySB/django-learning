@@ -17,7 +17,12 @@
   - [**Block Tags - Template Inheritance:**](#block-tags---template-inheritance)
   - [**Customer Error Templates**](#customer-error-templates)
     - [**Making a custom error template with a different name**](#making-a-custom-error-template-with-a-different-name)
-  - [Static Files:](#static-files)
+  - [**Static Files:**](#static-files)
+- [**Models**](#models)
+  - [**Database Overview:**](#database-overview)
+  - [**Models \& Databases**](#models--databases)
+    - [**Django Model Key Concepts**](#django-model-key-concepts)
+    - [**Connecting models to create relational databases**](#connecting-models-to-create-relational-databases)
 
 
 <br><br>
@@ -384,7 +389,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
    handler404 = 'my_site.views.my_custom_page_not_found_view'
 ```
 
-## Static Files:
+## **Static Files:**
 - Most projects will have static files such as images, js or CSS.
 - Django can serve these static files through tags instead of using full file path
 - The following is a generic method to let your template know the location of any static files.
@@ -440,3 +445,51 @@ ALLOWED_HOSTS = ['127.0.0.1']
    {% endblock %}
 ```
 
+<br><br>
+
+# **Models**
+
+- Models allow us to interact with a database with Python and Django.
+- This includes CRUD operations:
+  - Create
+  - Read
+  - Update
+  - Delete
+- THis section will explore how to store, retrieve, update and delete data from SQL based DBs using django's built in models tools and functionality.
+
+<br>
+
+## **Database Overview:**
+
+- SQL databases are tabular. I.e. relational data bases.
+- NoSQL databases are stored in a key/value pair format.
+- Django models are designed to work well with SQL type DBs and so we will focus primarily on them
+  - Additional packages can be installed to support NoSQL databases such as MongoDB.
+
+<br>
+
+## **Models & Databases**
+
+- Django models are defined inside a Django app (or proj) models.py file
+- THe models class operates on a system which directly converts Python based code into SQL commands.
+- Creating a single Model is similar to creating a new table in a DB. Relationships can then be drawn between the DBs various tables.
+
+<img src="screenshots/database_tables.png" width="600">
+
+<br>
+
+- Each DB table has a name and columns, where each column has a specific data type.
+
+### **Django Model Key Concepts**
+
+- **Inherits from the models class**
+- **Uses fields to define both data types and data constraints**
+  - for example, you may want to require information, like user's email address, in which case you can add a `NOT NULL` constraint. E.g.
+
+<img src="screenshots/models-sql.png" width="600">
+
+### **Connecting models to create relational databases**
+
+- Models can be connected through keys. E.g.
+
+<img src="screenshots/connecting_models.png" width="600">
