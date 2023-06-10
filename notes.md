@@ -27,6 +27,11 @@
 - [**Models \& Fields:**](#models--fields)
   - [**Setting up the DB with the `migrate` command**](#setting-up-the-db-with-the-migrate-command)
 - [Creating model fields:](#creating-model-fields)
+  - [**Migrations:**](#migrations)
+      - [**1. `python manage.py makemigrations app`**:](#1-python-managepy-makemigrations-app)
+      - [**2. `python manage.py migrate`:**](#2-python-managepy-migrate)
+      - [**3. `python manage.py slqmigrate`:**](#3-python-managepy-slqmigrate)
+    - [**Steps for migrations:**](#steps-for-migrations)
 
 
 <br><br>
@@ -546,3 +551,61 @@ ALLOWED_HOSTS = ['127.0.0.1']
       last_name = models.CharField(max_length=30)
       age = models.IntegerField()
 ```
+
+<br><br>
+
+## **Migrations:**
+Migrations is the act of connecting changes in your Django project or app to the database. For instance:
+  - Adding new models models
+  - Adding new applications
+  - Updating models with a new column/ attribute; etc.
+
+These changes are typically done through the `manage.py` file through three main commands:
+
+#### **1. `python manage.py makemigrations app`**:
+   - Creates the set of instructions that will apply changes to the database
+   - Default apps (admin, auth etc.) have already had their sql migrations code created. Hence, sometimes you need to run them right off the bat.
+   - When you run the `makemigrations` cmd, a file with these migrations is created in:
+     - app
+       - migrations
+         - 000n_initial.py
+
+#### **2. `python manage.py migrate`:**
+   - Runs existing migrations created through `makemigrations`. I.e. the files under the migrations dir.
+   - You can think of the very fist `migrate` command you run as executing the default `makemigrations` that were created when creating the project. 
+
+#### **3. `python manage.py slqmigrate`:**
+   - If you have already run `makemigrations` cmd and created a migration.py file, the `sqlmigrate` cmd allows you to view the sql code looks like.
+
+### **Steps for migrations:**
+1. Initial project `migrate` cmd
+2. Create app and create models
+3. Register app in INSTALLED_APPS in settings.py:
+   1. Find the app name by looking in:
+         - my_site
+           - [apps.py]
+             - apps.py
+               - [ClassName] e.g. 'OfficeConfig' for the office app I created in the learning environment
+   2. Register it:
+
+```
+   INSTALLED_APPS = [
+      'office.apps.OfficeConfig',
+      'django.contrib.admin',
+      'django.contrib.auth',
+      'django.contrib.contenttypes',
+      'django.contrib.sessions',
+      'django.contrib.messages',
+      'django.contrib.staticfiles',    
+   ]
+```
+4. Run `make migrations` for the new app
+   - `python manage.py makemigrations [appname]`
+
+5. **OPTIONAL** view sql commands:
+   - `python manage.py sqlmigrate [app_name] [migrations_file_num]` E.g.
+     - `python manage.py sqlmigrate office 0001`
+   - The above prints this to the terminal, could print this to file using bash cmd echo and > to put into file to send to others
+
+6. Run `migrate` to execute migrations
+   - `python manage.py migrate`
