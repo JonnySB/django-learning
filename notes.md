@@ -32,6 +32,11 @@
       - [**2. `python manage.py migrate`:**](#2-python-managepy-migrate)
       - [**3. `python manage.py slqmigrate`:**](#3-python-managepy-slqmigrate)
     - [**Steps for migrations:**](#steps-for-migrations)
+- [**Creating \& Inserting Data**](#creating--inserting-data)
+  - [**Using The Terminal To Add Data**](#using-the-terminal-to-add-data)
+    - [**Create Object and `.save()`**](#create-object-and-save)
+    - [**`objects.create()`**](#objectscreate)
+    - [**`objects.bulk_create()`**](#objectsbulk_create)
 
 
 <br><br>
@@ -609,3 +614,48 @@ These changes are typically done through the `manage.py` file through three main
 
 6. Run `migrate` to execute migrations
    - `python manage.py migrate`
+
+<br><br>
+
+# **Creating & Inserting Data**
+   - Inserting data into django can be done by creating a new instance of a model class, seeing as django models are represented classes, and then call the .`save()` method on it to create an INSERT call to the SQL db
+   - Alt. You can use the `.objects.create()` method to create and save in a single line
+   - In instances where you want to create multiple data entries in 'bulk', you can use the `.objects.bulk_create()` method to pass in a list of newly created objects
+
+## **Using The Terminal To Add Data**
+- An interactive shell can be opened using the `shell` command. I.e.
+  - `python manage.py shell`
+
+### **Create Object and `.save()`**
+- You can create data directly in the terminal by:
+  1. Opening an InteractiveConsole in the terminal
+      - `python manage.py shell`
+  2. Importing model:
+      - `from app.models import Model`
+  3. Creating a model object:
+      - `object = Model(**kargs)
+      - Note, at this point you can explore the object before saving it to the DB.
+  4. Saving the object to write it to the DB.
+      - `object.save()`
+      - Note, the `.save()` method is inherited from the `models.Model` class
+
+<img src="screenshots/adding_model_data.png" width="600">
+
+
+### **`objects.create()`**
+
+- The above can be done in one step using:
+  - `Model.objects.create(**kwags)`
+
+<img src="screenshots/objects_create.png" width="600">
+
+
+### **`objects.bulk_create()`**
+
+1. Import Models
+2. Create list (`my_list`) of model objects
+3. use `Model.objects.bulk_create(my_list)` to write to DB
+
+<img src="screenshots/bulk_create.png" width="600">
+
+
