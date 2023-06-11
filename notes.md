@@ -41,8 +41,9 @@
   - [**Three Key Query Methods:**](#three-key-query-methods)
     - [**1. `.all()`:**](#1-all)
   - [**2. `.get()`:**](#2-get)
-  - [**3. `.filter()`:**](#3-filter)
-  - [**4. `.exclude()`:**](#4-exclude)
+  - [**3.1 `.filter()`:**](#31-filter)
+  - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
+  - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
 
 
 <br><br>
@@ -645,7 +646,19 @@ These changes are typically done through the `manage.py` file through three main
       - `object.save()`
       - Note, the `.save()` method is inherited from the `models.Model` class
 
-<img src="screenshots/adding_model_data.png" width="600">
+```
+   Bash $ python manage.py shell
+
+   Python 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0] on linux
+   Type "help", "copyright", "credits" or "license" for more information.
+   (InteractiveConsole)
+   >>> 
+   >>> from office.models import Patient
+   >>> 
+   >>> anna_webb = Patient(first_name='Anna', last_name='Webb', age= 24)
+   >>> 
+   >>> anna_webb.save()
+```
 
 
 ### **`objects.create()`**
@@ -653,7 +666,12 @@ These changes are typically done through the `manage.py` file through three main
 - The above can be done in one step using:
   - `Model.objects.create(**kwags)`
 
-<img src="screenshots/objects_create.png" width="600">
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> Patient.objects.create(first_name='Zac', last_name='Brown', age=34)
+   <Patient: Brown, Zac is 34 years old.>
+```
 
 
 ### **`objects.bulk_create()`**
@@ -662,7 +680,14 @@ These changes are typically done through the `manage.py` file through three main
 2. Create list (`my_list`) of model objects
 3. use `Model.objects.bulk_create(my_list)` to write to DB
 
-<img src="screenshots/bulk_create.png" width="600">
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> my_list = [Patient(first_name='Tom', last_name='Paine', age=19), Patient(first_name='Bob', last_name='Dice', age=62)]
+   >>> 
+   >>> Patient.objects.bulk_create(my_list)
+   [<Patient: Paine, Tom is 19 years old.>, <Patient: Dice, Bob is 62 years old.>]
+```
 
 <br><br>
 
@@ -679,24 +704,80 @@ These changes are typically done through the `manage.py` file through three main
 
 ### **1. `.all()`:**
 
-<img src="screenshots/all().png" width="600">
-   - Special dunder methods can be created as a model method to do things such as print a human readable version of the model object.
+```
+   >>> Patient.objects.all()
+   <QuerySet [<Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Fring, Nancy is 12 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
+   >>> 
+   >>> Patient.objects.all()[0]
+   <Patient: Doe, John is 30 years old.>
+```
+
+   - Special dunder methods can be created as a model method to do things such as print a human readable version of the model object. E.g. to create the string above:
+
+```
+   class Patient(models.Model):
+      first_name = models.CharField(max_length=30)
+      last_name = models.CharField(max_length=30)
+      age = models.IntegerField()
+
+      def __str__(self):
+         return f"{self.last_name}, {self.first_name} is {self.age} years old."
+```
 
 ## **2. `.get()`:**
    - Allows us to grab a single item from the Model table
    - Typically reserved for when returning a single unique entry, like the default primary key (`pk=n`).
      - Note, in sql, the primary key starts at index 1
 
-<img src="screenshots/get.png" width="600">
+```
+   >>> Patient.objects.get(pk=1)
+   <Patient: Doe, John is 30 years old.>
+```
 
-## **3. `.filter()`:**
+## **3.1 `.filter()`:**
    - As opposed to `.get()`, the filter method narrows down based on conditions.
    - Filter methods can be chained together.
    - Note, operators (`AND`, `OR`)can be imported from `django.db.models` from the Q function.
    - `<` and `>` (and variations of) are not available using this method of filtering.
 
-<img src="screenshots/filter().png" width="600">
+```
+   >>> from django.db.models import Q
+   >>> 
+   >>> Patient.objects.filter(last_name="Doe").filter(age=30).all()
+   <QuerySet [<Patient: Doe, John is 30 years old.>]>
+   >>> 
+   >>> Patient.objects.filter(Q(last_name='Doe') & Q(age=30) | Q(age=43)).all()
+   <QuerySet [<Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>]>
+```
 
-## **4. `.exclude()`:**
+## **3.2 field lookups with a `.filter()` call:**
+More complex filtering operations can be created using field lookups. E.g.
+- `Model.objects.filter(name__startswith="s")`
+- [See full list of field lookups here](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#field-lookups)
 
+
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> Patient.objects.filter(last_name__startswith="D").all()
+   <QuerySet [<Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>]>
+   >>> 
+   >>> Patient.objects.filter(age__in=[x for x in range(30,40)]).all()
+   <QuerySet [<Patient: Doe, John is 30 years old.>]>
+   >>> 
+   >>> Patient.objects.filter(age__gte=40).all()
+   <QuerySet [<Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
+```
+
+## **4. ADDITIONAL METHODS**:
+There are **many many** more methods to help with extracting, filtering etc. in the django documentation. This includes functionality such as being able to sort your data. Please view the docs for more info:
+- [Additional methods can be found in the right hand pane](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#field-lookups)
+
+e.g.
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> Patient.objects.order_by('age').all()
+   <QuerySet [<Patient: Fring, Nancy is 12 years old.>, <Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
+```
 
