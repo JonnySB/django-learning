@@ -37,6 +37,12 @@
     - [**Create Object and `.save()`**](#create-object-and-save)
     - [**`objects.create()`**](#objectscreate)
     - [**`objects.bulk_create()`**](#objectsbulk_create)
+- [**Reading and Querying the Database**:](#reading-and-querying-the-database)
+  - [**Three Key Query Methods:**](#three-key-query-methods)
+    - [**1. `.all()`:**](#1-all)
+  - [**2. `.get()`:**](#2-get)
+  - [**3. `.filter()`:**](#3-filter)
+  - [**4. `.exclude()`:**](#4-exclude)
 
 
 <br><br>
@@ -657,5 +663,40 @@ These changes are typically done through the `manage.py` file through three main
 3. use `Model.objects.bulk_create(my_list)` to write to DB
 
 <img src="screenshots/bulk_create.png" width="600">
+
+<br><br>
+
+# **Reading and Querying the Database**:
+
+- Each model you create comes with a **Manager** (Django Model Manager) that allows you to create a **QuerySet** which can then be used to retrieve entries from the DB.
+  - The model manager is: `MyModel.objects`, as used when creating data
+- **QuerySets** are lazily evaluated, meaning that they don't hit the database until it is explicitly asked to grab info
+- The manager allows you to read the database through the use of method calls. E.g.
+  
+[Good Reference Material for Queries](docs.djangoproject.com/en/4.0/topics/db/queries/)
+
+## **Three Key Query Methods:**
+
+### **1. `.all()`:**
+
+<img src="screenshots/all().png" width="600">
+   - Special dunder methods can be created as a model method to do things such as print a human readable version of the model object.
+
+## **2. `.get()`:**
+   - Allows us to grab a single item from the Model table
+   - Typically reserved for when returning a single unique entry, like the default primary key (`pk=n`).
+     - Note, in sql, the primary key starts at index 1
+
+<img src="screenshots/get.png" width="600">
+
+## **3. `.filter()`:**
+   - As opposed to `.get()`, the filter method narrows down based on conditions.
+   - Filter methods can be chained together.
+   - Note, operators (`AND`, `OR`)can be imported from `django.db.models` from the Q function.
+   - `<` and `>` (and variations of) are not available using this method of filtering.
+
+<img src="screenshots/filter().png" width="600">
+
+## **4. `.exclude()`:**
 
 
