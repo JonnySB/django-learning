@@ -44,6 +44,7 @@
   - [**3.1 `.filter()`:**](#31-filter)
   - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
   - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
+- [**Updating Models:**](#updating-models)
 
 
 <br><br>
@@ -780,4 +781,24 @@ e.g.
    >>> Patient.objects.order_by('age').all()
    <QuerySet [<Patient: Fring, Nancy is 12 years old.>, <Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
 ```
+
+<br><br>
+
+# **Updating Models:**
+
+- To update models, you can simply add a new model class attribute and then migrate the changes.
+- Note, when adding a new field - a default value must be inserted for existing entries, even if it is just `null`
+  - In fact, if we run migrations without taking care of these issues, Django will specifically request us to make a decision.
+  - You'd typically be given two options: 1. To create a default value on the spot, or 2. Cancel migrations and create a default value within the model itself.
+
+```
+   $ python manage.py makemigrations office
+   It is impossible to add a non-nullable field 'heart_rate' to patient without specifying a default. This is because the database needs something to populate existing rows.
+   Please select a fix:
+   1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+   2) Quit and manually define a default value in models.py.
+   Select an option: 
+```
+
+- Validators can also be used to a hard-coded constraints that will reject non-valid entries.
 
