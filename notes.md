@@ -44,6 +44,10 @@
   - [**3.1 `.filter()`:**](#31-filter)
   - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
   - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
+  - [**Updating Models:**](#updating-models)
+  - [**Updating Entries:**](#updating-entries)
+  - [**Deleting Items:**](#deleting-items)
+  - [**Connecting Templates and Database Models:**](#connecting-templates-and-database-models)
 - [**Django Admin**](#django-admin)
   - [**Creating a super-user:**](#creating-a-super-user)
   - [**Django Admin and Models:**](#django-admin-and-models)
@@ -786,6 +790,168 @@ e.g.
    >>> Patient.objects.order_by('age').all()
    <QuerySet [<Patient: Fring, Nancy is 12 years old.>, <Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
 ```
+
+<br><br>
+
+<br><br>
+
+## **Updating Models:**
+
+- To update models, you can simply add a new model class attribute and then migrate the changes.
+- Note, when adding a new field - a default value must be inserted for existing entries, even if it is just `null`
+  - In fact, if we run migrations without taking care of these issues, Django will specifically request us to make a decision.
+  - You'd typically be given two options: 1. To create a default value on the spot, or 2. Cancel migrations and create a default value within the model itself.
+
+```
+   $ python manage.py makemigrations office
+   It is impossible to add a non-nullable field 'heart_rate' to patient without specifying a default. This is because the database needs something to populate existing rows.
+   Please select a fix:
+   1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+   2) Quit and manually define a default value in models.py.
+   Select an option: 
+```
+
+- Validators can also be used to a hard-coded constraints that will reject non-valid entries. Note, you will need to import the validators from `django.core.validators`
+
+```
+   from django.db import models
+   from django.core.validators import MaxValueValidator, MinValueValidator
+
+   # Create your models here.
+   class Patient(models.Model):
+      first_name = models.CharField(max_length=30)
+      last_name = models.CharField(max_length=30)
+      age = models.IntegerField(validators=[
+                                 MinValueValidator(0),
+                                 MaxValueValidator(120),
+                                 ])
+      heart_rate = models.IntegerField(default=60,
+                                       validators=[
+                                          MinValueValidator(1),
+                                          MaxValueValidator(350),    
+                                       ])
+```
+
+<br><br>
+
+## **Updating Entries:**
+
+- Django makes it very easy to update DB entries, you simply grab the existing data entry and update any attributes, them call `.save()` to write the changes to the DB. E.g.
+
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> Patient.objects.get(pk=1)
+   <Patient: Doe, John is 30 years old.>
+   >>> 
+   >>> john = Patient.objects.get(pk=1)
+   >>> 
+   >>> john
+   <Patient: Doe, John is 30 years old.>
+   >>> 
+   >>> john.last_name = 'Smith'
+   >>> 
+   >>> john
+   <Patient: Smith, John is 30 years old.>
+   >>> 
+   >>> john.save()
+   >>> 
+   >>> Patient.objects.all()
+   <QuerySet [<Patient: Smith, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Fring, Nancy is 12 years old.>, <Patient: Holly, Buddy is 95 years old.>, <Patient: Paine, Tom is 19 years old.>, <Patient: Dice, Bob is 62 years old.>, <Patient: Brown, Zac is 34 years old.>, <Patient: Webb, Anna is 24 years old.>]>
+```
+
+<br><br>
+
+## **Deleting Items:**
+
+- To delete items it's as simple as calling `.delete()` on the item to be removed. e.g.
+
+```
+   >>> from office.models import Patient
+   >>> 
+   >>> Patient.objects.get(pk=1)
+   <Patient: Doe, John is 30 years old.>
+   >>> 
+   >>> john = Patient.objects.get(pk=1)
+   >>> 
+   >>> john
+   <Patient: Doe, John is 30 years old.>
+   >>> 
+   >>> john.last_name = 'Smith'
+   >>> 
+   >>> john
+   <Patient: Smith, John is 30 years old.>
+   >>> 
+   >>> john.save()
+   >>> 
+   >>> Patient.objects.all()
+   <QuerySet [<Patient: Smith, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Fring, Nancy is 12 years old.>, <Patient: Holly, Buddy is 95 years old.>, <Patient: Paine, Tom is 19 years old.>, <Patient: Dice, Bob is 62 years old.>, <Patient: Brown, Zac is 34 years old.>, <Patient: Webb, Anna is 24 years old.>]>
+```
+
+## **Connecting Templates and Database Models:**
+
+- This section will explore reporting information back from the DB to templates, however, bare in mind that we are yet to cover two extremely powerful (Django Forms and Class Based Views) that will save us a ton of dev time.
+- That said, lets show a simple example of a template that could be used to report back information from a database.
+
+The following shows an example of how you could connect database data to a template - but isn't necessarily how you should do it all the time! (consider Forms and Class Based Views):
+
+
+
+   - Project level urls:
+      ```
+         from django.contrib import admin
+         from django.urls import path, include
+
+         urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('office/', include('office.urls')),
+            ]
+      ```
+
+   - Application level urls:
+      ```
+         from django.urls import path
+         from . import views
+
+         urlpatterns = [
+            path('', views.list_patients, name='list_patients')
+         ]
+      ```
+
+   - Application View:
+      ```
+         from django.shortcuts import render
+         from . import models
+
+         # Create your views here.
+         def list_patients(request):
+
+            all_patients = models.Patient.objects.all()
+            context = {'patients':all_patients}
+            
+            return render(request, 'office/list.html', context=context)
+      ```
+
+   - html Template:
+      ```
+         <html lang="en">
+         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=
+            , initial-scale=1.0">
+            <title>Document</title>
+         </head>
+         <body>
+            
+            <ul>
+            {% for person in patients %}
+               <li>{{person}}</li>
+            {% endfor %}
+            </ul>
+
+         </body>
+         </html>
+      ```
 
 <br><br>
 
