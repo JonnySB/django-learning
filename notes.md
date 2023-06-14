@@ -1,5 +1,4 @@
-# **Tabel of Contents**
-- [**Tabel of Contents**](#tabel-of-contents)
+****# **Tabel of Contents**
 - [**Common Commands \& Code Snippets:**](#common-commands--code-snippets)
 - [**Key Django Features**](#key-django-features)
     - [**Additional features not shown in MTV structure above:**](#additional-features-not-shown-in-mtv-structure-above)
@@ -54,6 +53,10 @@
     - [Registering model with Django admin:](#registering-model-with-django-admin)
     - [Creating customer admin pages:](#creating-customer-admin-pages)
 - [**Django Forms:**](#django-forms)
+  - [**GET, POST, and CSRF Overview:**](#get-post-and-csrf-overview)
+    - [**HTTP Request Methods:**](#http-request-methods)
+      - [**GET**](#get)
+      - [**POST**](#post)
 
 
 <br><br>
@@ -1034,3 +1037,32 @@ The following shows an example of how you could connect database data to a templ
 <br><br>
 
 # **Django Forms:**
+- HTML forms are extremely common across the internet.
+- Fortunately, Django comes with a built-in Forms class which can be used with django and python to create forms and send that form to the template through a simple Tag call `{{form}}`.
+
+## **GET, POST, and CSRF Overview:**
+- HTTP (Hypertext Transfer Protocol) is the foundation for the method of sending and receiving data over the world wide web.
+- Recall, HTTPS is simply and encrypted version of HTTP
+
+### **HTTP Request Methods:**
+#### **GET**
+- Requests data from a specified resource
+- *This is the default form method!*
+
+<img src="screenshots/get_request.png" width="600">
+
+- The GET request is sent in the URL. Hence:
+  - GET requests can be bookmarked
+  - GET requests are saved in history
+  - GET request can be cached
+  - GET request has length limits
+- GET request can only request data, not modify or update it.
+
+#### **POST**
+- Requests to send data to a server to create/ update a resource
+
+<img src="screenshots/POST.png" width="600">
+
+
+
+
