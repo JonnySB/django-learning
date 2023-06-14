@@ -18,32 +18,32 @@
   - [**Customer Error Templates**](#customer-error-templates)
     - [**Making a custom error template with a different name**](#making-a-custom-error-template-with-a-different-name)
   - [**Static Files:**](#static-files)
-- [**Models**](#models)
-  - [**Database Overview:**](#database-overview)
-  - [**Models \& Databases**](#models--databases)
-    - [**Django Model Key Concepts**](#django-model-key-concepts)
-    - [**Connecting models to create relational databases**](#connecting-models-to-create-relational-databases)
-- [**Dentist Mini-Project**](#dentist-mini-project)
 - [**Models \& Fields:**](#models--fields)
-  - [**Setting up the DB with the `migrate` command**](#setting-up-the-db-with-the-migrate-command)
-- [Creating model fields:](#creating-model-fields)
-  - [**Migrations:**](#migrations)
-      - [**1. `python manage.py makemigrations app`**:](#1-python-managepy-makemigrations-app)
-      - [**2. `python manage.py migrate`:**](#2-python-managepy-migrate)
-      - [**3. `python manage.py slqmigrate`:**](#3-python-managepy-slqmigrate)
-    - [**Steps for migrations:**](#steps-for-migrations)
-- [**Creating \& Inserting Data**](#creating--inserting-data)
-  - [**Using The Terminal To Add Data**](#using-the-terminal-to-add-data)
-    - [**Create Object and `.save()`**](#create-object-and-save)
-    - [**`objects.create()`**](#objectscreate)
-    - [**`objects.bulk_create()`**](#objectsbulk_create)
-- [**Reading and Querying the Database**:](#reading-and-querying-the-database)
-  - [**Three Key Query Methods:**](#three-key-query-methods)
-    - [**1. `.all()`:**](#1-all)
-  - [**2. `.get()`:**](#2-get)
-  - [**3.1 `.filter()`:**](#31-filter)
-  - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
-  - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
+  - [**Models Overview**](#models-overview)
+    - [**Database Overview:**](#database-overview)
+    - [**Models \& Databases**](#models--databases)
+      - [**Django Model Key Concepts**](#django-model-key-concepts)
+      - [**Connecting models to create relational databases**](#connecting-models-to-create-relational-databases)
+  - [Database Engines:](#database-engines)
+    - [**Setting up the DB with the `migrate` command**](#setting-up-the-db-with-the-migrate-command)
+  - [Creating model fields:](#creating-model-fields)
+    - [**Migrations:**](#migrations)
+        - [**1. `python manage.py makemigrations app`**:](#1-python-managepy-makemigrations-app)
+        - [**2. `python manage.py migrate`:**](#2-python-managepy-migrate)
+        - [**3. `python manage.py slqmigrate`:**](#3-python-managepy-slqmigrate)
+      - [**Steps for migrations:**](#steps-for-migrations)
+  - [**Creating \& Inserting Data**](#creating--inserting-data)
+    - [**Using The Terminal To Add Data**](#using-the-terminal-to-add-data)
+      - [**Create Object and `.save()`**](#create-object-and-save)
+      - [**`objects.create()`**](#objectscreate)
+      - [**`objects.bulk_create()`**](#objectsbulk_create)
+  - [**Reading and Querying the Database**:](#reading-and-querying-the-database)
+    - [**Three Key Query Methods:**](#three-key-query-methods)
+      - [**1. `.all()`:**](#1-all)
+      - [**2. `.get()`:**](#2-get)
+      - [**3.1 `.filter()`:**](#31-filter)
+      - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
+      - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
   - [**Updating Models:**](#updating-models)
   - [**Updating Entries:**](#updating-entries)
   - [**Deleting Items:**](#deleting-items)
@@ -478,7 +478,10 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 <br><br>
 
-# **Models**
+
+# **Models & Fields:**
+
+## **Models Overview**
 
 - Models allow us to interact with a database with Python and Django.
 - This includes CRUD operations:
@@ -490,7 +493,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 <br>
 
-## **Database Overview:**
+### **Database Overview:**
 
 - SQL databases are tabular. I.e. relational data bases.
 - NoSQL databases are stored in a key/value pair format.
@@ -499,7 +502,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 <br>
 
-## **Models & Databases**
+### **Models & Databases**
 
 - Django models are defined inside a Django app (or proj) models.py file
 - THe models class operates on a system which directly converts Python based code into SQL commands.
@@ -511,7 +514,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 - Each DB table has a name and columns, where each column has a specific data type.
 
-### **Django Model Key Concepts**
+#### **Django Model Key Concepts**
 
 - **Inherits from the models class**
 - **Uses fields to define both data types and data constraints**
@@ -519,17 +522,13 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 <img src="screenshots/models-sql.png" width="600">
 
-### **Connecting models to create relational databases**
+#### **Connecting models to create relational databases**
 
 - Models can be connected through keys. E.g.
 
 <img src="screenshots/connecting_models.png" width="600">
 
-# **Dentist Mini-Project**
-
-**Created new mini project for following sections**
-
-# **Models & Fields:**
+## Database Engines:
 
 - By default the database `ENGINE` is set as sqlite3, which is included in a python installation.
 - The `NAME` component provides a path to the database.
@@ -554,12 +553,12 @@ ALLOWED_HOSTS = ['127.0.0.1']
   - oracle
 - However, additional DBs cab be used by installing additional third party libs. (See databases section of docs for more details)
 
-## **Setting up the DB with the `migrate` command**
+### **Setting up the DB with the `migrate` command**
 - When initializing a project, you will notice that there is no db.sqlite3 file visible
 - To set up the database (in this case the sqlite3 db), you first need to make sure any apps are registered in the installed apps section of settings.py and then rune the migrate command. That is, in the terminal:
     - `python manage.py migrate`
 
-# Creating model fields:
+## Creating model fields:
 
 - Models can be created through inheritance of django's core models. I.e.
   - In the apps models.py file, you can create a class (which will ultimately create a DB table) and inherit from `models.Model`. E.g.
@@ -576,7 +575,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 <br><br>
 
-## **Migrations:**
+### **Migrations:**
 Migrations is the act of connecting changes in your Django project or app to the database. For instance:
   - Adding new models models
   - Adding new applications
@@ -584,7 +583,7 @@ Migrations is the act of connecting changes in your Django project or app to the
 
 These changes are typically done through the `manage.py` file through three main commands:
 
-#### **1. `python manage.py makemigrations app`**:
+##### **1. `python manage.py makemigrations app`**:
    - Creates the set of instructions that will apply changes to the database
    - Default apps (admin, auth etc.) have already had their sql migrations code created. Hence, sometimes you need to run them right off the bat.
    - When you run the `makemigrations` cmd, a file with these migrations is created in:
@@ -592,14 +591,14 @@ These changes are typically done through the `manage.py` file through three main
        - migrations
          - 000n_initial.py
 
-#### **2. `python manage.py migrate`:**
+##### **2. `python manage.py migrate`:**
    - Runs existing migrations created through `makemigrations`. I.e. the files under the migrations dir.
    - You can think of the very fist `migrate` command you run as executing the default `makemigrations` that were created when creating the project. 
 
-#### **3. `python manage.py slqmigrate`:**
+##### **3. `python manage.py slqmigrate`:**
    - If you have already run `makemigrations` cmd and created a migration.py file, the `sqlmigrate` cmd allows you to view the sql code looks like.
 
-### **Steps for migrations:**
+#### **Steps for migrations:**
 1. Initial project `migrate` cmd
 2. Create app and create models
 3. Register app in INSTALLED_APPS in settings.py:
@@ -634,16 +633,16 @@ These changes are typically done through the `manage.py` file through three main
 
 <br><br>
 
-# **Creating & Inserting Data**
+## **Creating & Inserting Data**
    - Inserting data into django can be done by creating a new instance of a model class, seeing as django models are represented classes, and then call the .`save()` method on it to create an INSERT call to the SQL db
    - Alt. You can use the `.objects.create()` method to create and save in a single line
    - In instances where you want to create multiple data entries in 'bulk', you can use the `.objects.bulk_create()` method to pass in a list of newly created objects
 
-## **Using The Terminal To Add Data**
+### **Using The Terminal To Add Data**
 - An interactive shell can be opened using the `shell` command. I.e.
   - `python manage.py shell`
 
-### **Create Object and `.save()`**
+#### **Create Object and `.save()`**
 - You can create data directly in the terminal by:
   1. Opening an InteractiveConsole in the terminal
       - `python manage.py shell`
@@ -671,7 +670,7 @@ These changes are typically done through the `manage.py` file through three main
 ```
 
 
-### **`objects.create()`**
+#### **`objects.create()`**
 
 - The above can be done in one step using:
   - `Model.objects.create(**kwags)`
@@ -684,7 +683,7 @@ These changes are typically done through the `manage.py` file through three main
 ```
 
 
-### **`objects.bulk_create()`**
+#### **`objects.bulk_create()`**
 
 1. Import Models
 2. Create list (`my_list`) of model objects
@@ -701,7 +700,7 @@ These changes are typically done through the `manage.py` file through three main
 
 <br><br>
 
-# **Reading and Querying the Database**:
+## **Reading and Querying the Database**:
 
 - Each model you create comes with a **Manager** (Django Model Manager) that allows you to create a **QuerySet** which can then be used to retrieve entries from the DB.
   - The model manager is: `MyModel.objects`, as used when creating data
@@ -710,9 +709,9 @@ These changes are typically done through the `manage.py` file through three main
   
 [Good Reference Material for Queries](docs.djangoproject.com/en/4.0/topics/db/queries/)
 
-## **Three Key Query Methods:**
+### **Three Key Query Methods:**
 
-### **1. `.all()`:**
+#### **1. `.all()`:**
 
 ```
    >>> Patient.objects.all()
@@ -734,7 +733,7 @@ These changes are typically done through the `manage.py` file through three main
          return f"{self.last_name}, {self.first_name} is {self.age} years old."
 ```
 
-## **2. `.get()`:**
+#### **2. `.get()`:**
    - Allows us to grab a single item from the Model table
    - Typically reserved for when returning a single unique entry, like the default primary key (`pk=n`).
      - Note, in sql, the primary key starts at index 1
@@ -744,7 +743,7 @@ These changes are typically done through the `manage.py` file through three main
    <Patient: Doe, John is 30 years old.>
 ```
 
-## **3.1 `.filter()`:**
+#### **3.1 `.filter()`:**
    - As opposed to `.get()`, the filter method narrows down based on conditions.
    - Filter methods can be chained together.
    - Note, operators (`AND`, `OR`)can be imported from `django.db.models` from the Q function.
@@ -760,7 +759,7 @@ These changes are typically done through the `manage.py` file through three main
    <QuerySet [<Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>]>
 ```
 
-## **3.2 field lookups with a `.filter()` call:**
+#### **3.2 field lookups with a `.filter()` call:**
 More complex filtering operations can be created using field lookups. E.g.
 - `Model.objects.filter(name__startswith="s")`
 - [See full list of field lookups here](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#field-lookups)
@@ -779,7 +778,7 @@ More complex filtering operations can be created using field lookups. E.g.
    <QuerySet [<Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
 ```
 
-## **4. ADDITIONAL METHODS**:
+#### **4. ADDITIONAL METHODS**:
 There are **many many** more methods to help with extracting, filtering etc. in the django documentation. This includes functionality such as being able to sort your data. Please view the docs for more info:
 - [Additional methods can be found in the right hand pane](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#field-lookups)
 
@@ -790,8 +789,6 @@ e.g.
    >>> Patient.objects.order_by('age').all()
    <QuerySet [<Patient: Fring, Nancy is 12 years old.>, <Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
 ```
-
-<br><br>
 
 <br><br>
 
