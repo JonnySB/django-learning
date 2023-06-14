@@ -44,6 +44,12 @@
   - [**3.1 `.filter()`:**](#31-filter)
   - [**3.2 field lookups with a `.filter()` call:**](#32-field-lookups-with-a-filter-call)
   - [**4. ADDITIONAL METHODS**:](#4-additional-methods)
+- [**Django Admin**](#django-admin)
+  - [**Creating a super-user:**](#creating-a-super-user)
+  - [**Django Admin and Models:**](#django-admin-and-models)
+    - [Registering model with Django admin:](#registering-model-with-django-admin)
+    - [Creating customer admin pages:](#creating-customer-admin-pages)
+- [**Django Forms:**](#django-forms)
 
 
 <br><br>
@@ -781,3 +787,87 @@ e.g.
    <QuerySet [<Patient: Fring, Nancy is 12 years old.>, <Patient: Doe, John is 30 years old.>, <Patient: Doe, Jane is 43 years old.>, <Patient: Man, Old is 75 years old.>, <Patient: Holly, Buddy is 95 years old.>]>
 ```
 
+<br><br>
+
+# **Django Admin**
+
+**Created my_car_site project using everything learnt so far**
+
+- You can navigate to the Django Admin page associated with your website by going to `domain_name/admin`
+
+## **Creating a super-user:**
+
+- You can use the CLI to create a super user. I.e.
+
+   ```
+      python manage.py createsuperuser
+      Username (leave blank to use 'jonny'): jonny_admin
+      Email address: jonny@example.com
+      Password: 
+      Password (again): 
+      Superuser created successfully.
+   ```
+- Once created, the above super user would be able to access the admin page
+
+## **Django Admin and Models:**
+   - Let's explore registering models to the django admin interface; and,
+   - Look at how the `ModelAdmin` class can provide us with additional functionality with the fields presented in the Admin interface.
+
+### Registering model with Django admin:
+
+   - To register a model with django admin you must update the app's admin.py file by:
+      1. Importing the model to be registered. e.g.
+         - `from app.models import Model`
+         - Note that `.models` would work too but by convention `app.model` is used.
+      2. Using `admin.site.register(Model)` to register the model.
+
+   ```
+      from django.contrib import admin
+      from cars.models import Car
+
+      # Register your models here.
+
+      admin.site.register(Car)
+   ```
+
+### Creating customer admin pages:
+   - as with above you can use the app's admin.py file to create a custom admin page.
+   - To do this you must:
+      1. import the model as before
+      2. Create a custom class that inherits from `admin.ModelAdmin`
+      3. Define your functionality
+      4. register the admin model with `admin.site.register(Car, CarAdmin)`
+
+   ```
+      from django.contrib import admin
+      from cars.models import Car
+
+      # Register your models here.
+
+      class CarAdmin(admin.ModelAdmin):
+         fields = ['year', 'brand'] # defines order of fields
+
+      admin.site.register(Car,CarAdmin)
+   ```
+   
+   or
+
+   ```
+      from django.contrib import admin
+      from cars.models import Car
+
+      # Register your models here.
+
+      class CarAdmin(admin.ModelAdmin):
+         # creates subsections:
+         fieldsets = [
+            ('CAR INFO', {'fields':['brand']}),
+            ('YEAR INFO', {'fields':['year']})
+         ]
+
+      admin.site.register(Car,CarAdmin)
+   ```
+
+<br><br>
+
+# **Django Forms:**
