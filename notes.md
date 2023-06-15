@@ -57,6 +57,10 @@
     - [**HTTP Request Methods:**](#http-request-methods)
       - [**GET**](#get)
       - [**POST**](#post)
+      - [**CSRF - Cross-Site Request Forgery - Fake HTML Forms**](#csrf---cross-site-request-forgery---fake-html-forms)
+      - [**How to prevent a CSRF attack?**](#how-to-prevent-a-csrf-attack)
+      - [**Creating CSRF tokens**](#creating-csrf-tokens)
+  - [Django Form Class Basics:](#django-form-class-basics)
 
 
 <br><br>
@@ -1062,6 +1066,138 @@ The following shows an example of how you could connect database data to a templ
 - Requests to send data to a server to create/ update a resource
 
 <img src="screenshots/POST.png" width="600">
+
+- Information is no longer sent through the url, and now is instead sent in the body of the http request.
+- You still get a response back!
+
+#### **CSRF - Cross-Site Request Forgery - Fake HTML Forms**
+
+- Consider a bank's website that have an html form that transfers money.
+- If a hacker created a forgery of the html form the could edit key components. E.g. who is sending money.
+- They would then initiate some form of phishing scam (e.g. by email) to tick a user into sending this form request that would go to the bank, causing them to send money believing its a legitimacy
+
+- CRSF - Essentially a hacker creates a forgery of an html form and then uses someone else to perform the malicious action across the sites.
+
+#### **How to prevent a CSRF attack?**
+- Generate a random cryptographic token with every form during each individual session
+  - the server can then confirm if the token matches with the current session
+- Since each session has a unique token, only the true original form would be accepted as authentic
+
+<img src="screenshots/CSRF.png" width="600">
+
+- Even if a hacker were to forge the form, the CSRF token would more than likely have expired by the time they are able to enact their attack.
+
+#### **Creating CSRF tokens**
+
+- Django creates these CSRF tokens for us automatically with a simple tag call:
+  - `{% csrf_token %}`
+
+<br><br>
+
+## Django Form Class Basics:
+
+1. Create an HTML form and a submit button:
+
+   ```
+      <html lang="en">
+         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+         </head>
+
+         <body>
+
+            <h1>Rental Review FORM</h1>
+            <form method="POST">
+
+               <input type="submit">
+            </form>
+
+         </body>
+      </html>
+   ```
+
+2. Create a `forms.py` inside the application:
+   - This can be populated much in the same way as a django model. See documentation for more details.
+
+   '''
+      from django import forms
+
+      class ReviewForm(forms.Form):
+         first_name = forms.CharField(label='First Name',max_length=100)
+         last_name = forms.CharField(label='Last Name',max_length=100)
+         email = forms.EmailField(label='Email')
+         review = forms.CharField(label='Please write your review here')
+   '''
+
+3. Connecting the form template to the views.py file.
+   - Use an if statement to first connect the instance where it is not a POST request. I.e. rendering the form for their first visit to the site.
+
+   ```
+      from django.shortcuts import render
+      from .forms import ReviewForm
+
+      # Create your views here.
+      def rental_review(request):
+         
+         # POST request → form contents → thank you
+         if request.method == 'POST':
+            pass
+         
+         # else, render form:
+         else:
+            form = ReviewForm()
+         return render(request, 'cars/rental_review.html', context={'form':form})
+   ```
+
+4. Add the form to the html template using `{{form}}`, remembering to add in the `{% csrf_token %}`
+
+   ```
+      <html lang="en">
+      <head>
+         <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>Document</title>
+      </head>
+      <body>
+         <h1>Rental Review FORM</h1>
+
+         <form method="POST">
+            {% csrf_token %}
+            {{form}}
+            <input type="submit">
+         </form>
+
+
+      </body>
+      </html>
+         ```
+
+5. WHen they hit submit, the POST request is initiated and so different functionality can be applied in the views.py file. THe views.py file can be updated to the following:
+
+   ```
+      from django.shortcuts import render, redirect
+      from django.urls import reverse
+      from .forms import ReviewForm
+
+      # Create your views here.
+      def rental_review(request):
+         # POST request → form contents → thank you
+         if request.method == 'POST':
+            form = ReviewForm(request.POST)
+            
+            if form.is_valid():
+                  print(form.cleaned_data)
+                  return redirect(reverse('cars:thank_you'))
+
+         # else, render for:
+         else:
+            form = ReviewForm()
+         return render(request, 'cars/rental_review.html', context={'form':form})
+   ```
+
+
 
 
 
