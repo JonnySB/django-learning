@@ -71,7 +71,11 @@
   - [**Model Forms:**](#model-forms)
   - [ModelForm Customisations:](#modelform-customisations)
 - [**Class Based Views**](#class-based-views)
-  - [**Intro to class based views:**](#intro-to-class-based-views)
+  - [**Intro to Class Based Views:**](#intro-to-class-based-views)
+  - [**Class Based Views Basics**](#class-based-views-basics)
+    - [**Connecting to a template**](#connecting-to-a-template)
+  - [**FormView:**](#formview)
+  - [**CreateView:**](#createview)
 
 
 
@@ -1490,4 +1494,117 @@ Templates are used to increase the visual appeal of django forms. Lets explore h
 <br><br>
 
 # **Class Based Views**
-## **Intro to class based views:**
+## **Intro to Class Based Views:**
+
+- So far we've only seen functions inside our views.py file, but like Forms and Models, Django provides an entire View class system that is very powerful for quickly rendering commonly used views.
+- Django CBVs (Class Based Views) come with many pre-built generic class views for common tasks, such as listing all the values for a particular model in a database (ListView) or creating a new instance of a model object (CreateView).
+
+## **Class Based Views Basics**
+### **Connecting to a template**
+
+To connect to a template using class based views, a few simple steps can be followed.
+
+1. Create the html template. E.g.  
+   - classroom/templates/classroom/home.html
+
+2. Create the view:
+   - Note, this is now a class rather than a function
+   
+         from django.shortcuts import render
+         from django.views.generic import TemplateView
+
+         # Template based view!
+         class HomeView(TemplateView):
+            template_name = 'classroom/home.html'
+
+         class ThankYou(TemplateView):
+            template_name = 'classroom/thank_you.html'
+
+3. Connect the view to the urls file:
+   - Notice that now the views are class based, the function call `.as_view()` is required.
+
+         from django.urls import path
+         from . import views
+
+         app_name = 'classroom'
+
+         urlpatterns = [
+            path('', views.HomeView.as_view(), name='home'),
+            path('thank_you/', views.ThankYou.as_view(), name='thank_you')
+         ]
+   - Note you also have to connect the app urls to the site urls (Not Shown)
+
+<br>
+
+## **FormView:**
+
+1. Create form:
+
+```
+   from django import forms
+
+   class ContactForm(forms.Form):
+      name = forms.CharField()
+      message = forms.CharField(widget=forms.Textarea)
+```
+
+2. Crease html template:
+
+```
+   <h1>Form View Template (contact.html)</h1>
+   <form method="POST">
+      {% csrf_token %}
+      {{form.as_p}}
+      <input type="submit" value='submit'>
+   </form>
+```
+
+3. Create view
+   - Connect both the form and the template to the view
+   - Set what to do for:
+     - success url
+     - what to do with the form
+
+```
+   from django.shortcuts import render
+   from django.urls import reverse_lazy
+   from django.views.generic import TemplateView, FormView
+
+   from classroom.forms import ContactForm
+
+   # Template based view!
+   class HomeView(TemplateView):
+      template_name = 'classroom/home.html'
+
+   class ThankYou(TemplateView):
+      template_name = 'classroom/thank_you.html'
+
+   class ContactFormView(FormView):
+      form_class = ContactForm
+      template_name = 'classroom/contact.html'
+
+      # Success URL: (note it's a url, not a template file)
+      success_url = reverse_lazy('classroom:thank_you')
+
+      # What to do with the form?
+      def form_valid(self, form):
+         print(form.cleaned_data)
+         return super().form_valid(form)
+```
+
+4. Update urls to have link to contact url
+
+```
+   from django.urls import path
+   from . import views
+
+   app_name = 'classroom'
+
+   urlpatterns = [
+      path('', views.HomeView.as_view(), name='home'),
+      path('thank_you/', views.ThankYou.as_view(), name='thank_you'),
+      path('contact/', views.ContactFormView.as_view(), name='contact')
+   ]
+```
+
+## **CreateView:**
