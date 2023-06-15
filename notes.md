@@ -1,4 +1,5 @@
-****# **Tabel of Contents**
+# **Table of Contents**
+- [**Table of Contents**](#table-of-contents)
 - [**Common Commands \& Code Snippets:**](#common-commands--code-snippets)
 - [**Key Django Features**](#key-django-features)
     - [**Additional features not shown in MTV structure above:**](#additional-features-not-shown-in-mtv-structure-above)
@@ -60,7 +61,25 @@
       - [**CSRF - Cross-Site Request Forgery - Fake HTML Forms**](#csrf---cross-site-request-forgery---fake-html-forms)
       - [**How to prevent a CSRF attack?**](#how-to-prevent-a-csrf-attack)
       - [**Creating CSRF tokens**](#creating-csrf-tokens)
-  - [Django Form Class Basics:](#django-form-class-basics)
+  - [**Django Form Class Basics:**](#django-form-class-basics)
+  - [**Template Rendering:**](#template-rendering)
+    - [**Applying to whole form:**](#applying-to-whole-form)
+    - [**Applying to individual elements:**](#applying-to-individual-elements)
+    - [**Using for loops (and bootstrap):**](#using-for-loops-and-bootstrap)
+  - [**Widgets and Styling:**](#widgets-and-styling)
+    - [**Editing Form Items and Setting Styling using Widgets:**](#editing-form-items-and-setting-styling-using-widgets)
+  - [**Model Forms:**](#model-forms)
+  - [ModelForm Customisations:](#modelform-customisations)
+- [**Class Based Views**](#class-based-views)
+  - [**Intro to class based views:**](#intro-to-class-based-views)
+
+
+
+
+
+
+
+
 
 
 <br><br>
@@ -1094,11 +1113,11 @@ The following shows an example of how you could connect database data to a templ
 
 <br><br>
 
-## Django Form Class Basics:
+
+## **Django Form Class Basics:**
 
 1. Create an HTML form and a submit button:
 
-   ```
       <html lang="en">
          <head>
             <meta charset="UTF-8">
@@ -1116,94 +1135,89 @@ The following shows an example of how you could connect database data to a templ
 
          </body>
       </html>
-   ```
 
 2. Create a `forms.py` inside the application:
    - This can be populated much in the same way as a django model. See documentation for more details.
 
-   '''
-      from django import forms
+         from django import forms
 
-      class ReviewForm(forms.Form):
-         first_name = forms.CharField(label='First Name',max_length=100)
-         last_name = forms.CharField(label='Last Name',max_length=100)
-         email = forms.EmailField(label='Email')
-         review = forms.CharField(label='Please write your review here')
-   '''
+         class ReviewForm(forms.Form):
+            first_name = forms.CharField(label='First Name',max_length=100)
+            last_name = forms.CharField(label='Last Name',max_length=100)
+            email = forms.EmailField(label='Email')
+            review = forms.CharField(label='Please write your review here')
 
 3. Connecting the form template to the views.py file.
    - Use an if statement to first connect the instance where it is not a POST request. I.e. rendering the form for their first visit to the site.
 
-   ```
-      from django.shortcuts import render
-      from .forms import ReviewForm
+         from django.shortcuts import render
+         from .forms import ReviewForm
 
-      # Create your views here.
-      def rental_review(request):
-         
-         # POST request → form contents → thank you
-         if request.method == 'POST':
-            pass
-         
-         # else, render form:
-         else:
-            form = ReviewForm()
-         return render(request, 'cars/rental_review.html', context={'form':form})
-   ```
+         # Create your views here.
+         def rental_review(request):
+            
+            # POST request → form contents → thank you
+            if request.method == 'POST':
+               pass
+            
+            # else, render form:
+            else:
+               form = ReviewForm()
+            return render(request, 'cars/rental_review.html', context={'form':form})
+   
 
 4. Add the form to the html template using `{{form}}`, remembering to add in the `{% csrf_token %}`
 
-   ```
-      <html lang="en">
-      <head>
-         <meta charset="UTF-8">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <title>Document</title>
-      </head>
-      <body>
-         <h1>Rental Review FORM</h1>
+         <html lang="en">
+         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+         </head>
+         <body>
+            <h1>Rental Review FORM</h1>
 
-         <form method="POST">
-            {% csrf_token %}
-            {{form}}
-            <input type="submit">
-         </form>
+            <form method="POST">
+               {% csrf_token %}
+               {{form}}
+               <input type="submit">
+            </form>
 
 
-      </body>
-      </html>
-         ```
+         </body>
+         </html>
 
 5. When the user hits submit, the POST request is initiated and so different functionality can be applied in the views.py file. I.e.The views.py file can be updated to the following:
       - The following prints the user submitted data to the console - however, this could be - for example - parsed to a model. 
 
-   ```
-      from django.shortcuts import render, redirect
-      from django.urls import reverse
-      from .forms import ReviewForm
+            from django.shortcuts import render, redirect
+            from django.urls import reverse
+            from .forms import ReviewForm
 
-      # Create your views here.
-      def rental_review(request):
-         # POST request → form contents → thank you
-         if request.method == 'POST':
-            form = ReviewForm(request.POST)
-            
-            if form.is_valid():
-                  print(form.cleaned_data)
-                  return redirect(reverse('cars:thank_you'))
+            # Create your views here.
+            def rental_review(request):
+               # POST request → form contents → thank you
+               if request.method == 'POST':
+                  form = ReviewForm(request.POST)
+                  
+                  if form.is_valid():
+                        print(form.cleaned_data)
+                        return redirect(reverse('cars:thank_you'))
 
-         # else, render for:
-         else:
-            form = ReviewForm()
-         return render(request, 'cars/rental_review.html', context={'form':form})
-   ```
+               # else, render for:
+               else:
+                  form = ReviewForm()
+               return render(request, 'cars/rental_review.html', context={'form':form})
 
+<br>
 
-## **Django Forms - Template Rendering, least powerful to most powerful:**
+## **Template Rendering:**
 
 Templates are used to increase the visual appeal of django forms. Lets explore how we can do this.
 
-### **Least Powerful - Applying to whole form:**
+<br>
+
+### **Applying to whole form:**
 
 - One option we can leverage is to use the `.as_<html_tag>`.
 - This tag wraps all elements of the form in the defined tag. E.g. to wrap each element in a paragraph tag (i.e. rendered as <\p> in the HTML source)
@@ -1220,7 +1234,8 @@ Templates are used to increase the visual appeal of django forms. Lets explore h
 
 <br>
 
-### **Powerful - Applying to individual elements:**
+
+### **Applying to individual elements:**
 
 - To select individual items from a form, you can perform specific selections.
 - Thus, you could start to wrap individual elements of the form in different tags for styling etc. E.g.
@@ -1241,7 +1256,8 @@ Templates are used to increase the visual appeal of django forms. Lets explore h
 
 <br>
 
-### **Powerful - Using for loops (and bootstrap):**
+
+### **Using for loops (and bootstrap):**
 
 - The real power of template rendering comes when used in conjunction with a constructs such as the html for loop.
 - Functionality, such as that provided by bootstrap can also then be applied relatively easily. E.g.
@@ -1270,7 +1286,7 @@ Templates are used to increase the visual appeal of django forms. Lets explore h
    ```
 <br><br>
 
-## **Django Forms - Widgets and Styling:**
+## **Widgets and Styling:**
 - Recall that a Form Field inside forms.py generates a Django **widget** which in turn renders the actual HTML form input/ label tags.
 - We can access widget attributes to provide more control over styling and presentation.
 
@@ -1358,5 +1374,120 @@ Templates are used to increase the visual appeal of django forms. Lets explore h
       class ReviewForm(forms.ModelForm):
          class Meta:
             model = Review
-            fields = ['first_name','last_name']
+            fields = ['first_name', 'last_name', 'stars']
    ```
+
+4. Finally, you can create/ update you views.py file to save form information to a db. E.g.
+
+   ```
+      from django.shortcuts import render, redirect
+      from django.urls import reverse
+      from .forms import ReviewForm
+
+      # Create your views here.
+      def rental_review(request):
+         # POST request → form contents → thank you
+         if request.method == 'POST':
+            form = ReviewForm(request.POST)
+            
+            if form.is_valid():
+                  form.save()
+                  return redirect(reverse('cars:thank_you'))
+
+         # else, render for:
+         else:
+            form = ReviewForm()
+         return render(request, 'cars/rental_review.html', context={'form':form})
+
+      def thank_you(request):
+         return render (request, 'cars/thank_you.html')
+   ```
+
+## ModelForm Customisations:
+
+- Note, far more customisations options can be found in the docs - but to show a few:
+
+- Overwriting model labels:
+
+      
+      from django import forms
+      from .models import Review
+
+      class ReviewForm(forms.ModelForm):
+         class Meta:
+            model = Review
+            fields = "__all__" # pass in all model fields as form fields
+            
+            labels = {
+                  'first_name':"Your first name:",
+                  'last_name':"Your last name:",
+                  'stars':'Rating:',
+            }
+      
+- Using validators:
+  - Much in the same way as using validators under usual circumstances, you can add the validators to the model.
+  -  The `model.is_valid` call in the views.py file will then automatically check to see if a form submission meets the validation criteria.
+  -  To return a message, the `{{field.error}}` tag can be used in the HTML file. e.g. if you have the following model:
+
+   ```
+      from django.db import models
+      from django.core.validators import MinValueValidator, MaxValueValidator
+
+      # Create your models here.
+      class Review(models.Model):
+         first_name = models.CharField(max_length=30)
+         last_name = models.CharField(max_length=30)
+         stars = models.IntegerField(validators=[
+                                          MinValueValidator(1),
+                                          MaxValueValidator(5),
+                                    ])
+   ```
+   
+- Then you can set your HTML file up to return an error message by including `{{field.error}}`. E.g.
+
+      <!--- Head removed to save space--->
+      <body>
+         <h1>Rental Review FORM</h1>
+         <div class="container">
+            <form method="POST">
+                  {% csrf_token %}
+                  {% for field in form %}
+                     <div class="mb-3">
+                        {{field.label}}
+                     </div>
+                     {{field}}
+                     {{field.errors}}
+                  {% endfor %}
+                  <input type="submit">
+            </form> 
+         </div>
+      </body>
+
+- To create a custom error message you can add the following `error_messages` dictionary to the forms.py file:
+
+      from django import forms
+      from .models import Review
+
+      class ReviewForm(forms.ModelForm):
+         class Meta:
+            model = Review
+            
+            fields = "__all__" # pass in all model fields as form fields
+            
+            labels = {
+                  'first_name':"Your first name:",
+                  'last_name':"Your last name:",
+                  'stars':'Rating:',
+            }
+            
+            error_messages = {
+                  'stars':{
+                     'min_value':"Error, the minimum rating is 1",
+                     'max_value':"Error: the maximum rating is 5"
+                  }
+            }
+        
+<br><br>
+
+# **Class Based Views**
+## **Intro to class based views:**
