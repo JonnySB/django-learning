@@ -1174,7 +1174,8 @@ The following shows an example of how you could connect database data to a templ
       </html>
          ```
 
-5. WHen they hit submit, the POST request is initiated and so different functionality can be applied in the views.py file. THe views.py file can be updated to the following:
+5. When the user hits submit, the POST request is initiated and so different functionality can be applied in the views.py file. I.e.The views.py file can be updated to the following:
+      - The following prints the user submitted data to the console - however, this could be - for example - parsed to a model. 
 
    ```
       from django.shortcuts import render, redirect
@@ -1198,7 +1199,164 @@ The following shows an example of how you could connect database data to a templ
    ```
 
 
+## **Django Forms - Template Rendering, least powerful to most powerful:**
+
+Templates are used to increase the visual appeal of django forms. Lets explore how we can do this.
+
+### **Least Powerful - Applying to whole form:**
+
+- One option we can leverage is to use the `.as_<html_tag>`.
+- This tag wraps all elements of the form in the defined tag. E.g. to wrap each element in a paragraph tag (i.e. rendered as <\p> in the HTML source)
+
+   ```
+      <form method="POST">
+         {% csrf_token %}
+         {{form.as_p}}
+         <input type="submit">
+      </form> 
+   ```
+
+- Other options include: `.as_p`, `as_div`, `.as_ul`, `.as_table` etc.
+
+<br>
+
+### **Powerful - Applying to individual elements:**
+
+- To select individual items from a form, you can perform specific selections.
+- Thus, you could start to wrap individual elements of the form in different tags for styling etc. E.g.
+- However, if you're doing this you could potentially render through HTML forms only rather than by using django forms.
+
+   ```
+      <form method="POST">
+         {% csrf_token %}
+         {{form.first_name.label_tag}} {{form.first_name}}
+         <div>
+            <p>
+               {{form.last_name.label_tag}} {{form.last_name}}
+            </p>
+         </div>
+         <input type="submit">
+      </form> 
+   ```
+
+<br>
+
+### **Powerful - Using for loops (and bootstrap):**
+
+- The real power of template rendering comes when used in conjunction with a constructs such as the html for loop.
+- Functionality, such as that provided by bootstrap can also then be applied relatively easily. E.g.
+
+   ```
+      <html lang="en">
+      <head>
+         <!--- IMPORT BOOTSTRAP HERE - REMOVED TO CREATE SPACE --->
+      </head>
+      <body>
+         <div class="container">
+            <h1>Rental Review FORM</h1>
+            <form method="POST">
+                  {% csrf_token %}
+                  {% for field in form %}
+                     <div class="mb-3">
+                        {{field.label}}
+                     </div>
+                     {{field}}
+                  {% endfor %}
+                  <input type="submit">
+            </form> 
+         </div>
+      </body>
+      </html>
+   ```
+<br><br>
+
+## **Django Forms - Widgets and Styling:**
+- Recall that a Form Field inside forms.py generates a Django **widget** which in turn renders the actual HTML form input/ label tags.
+- We can access widget attributes to provide more control over styling and presentation.
+
+<br>
+
+1. First, we'll begin by linking a static files directory to hold our custom CSS files. E.g.
+   1. Create a `app/static/app/custom.css` file
+  
+      ```
+         .myform{
+             border: 5px dashed red;
+         }
+      ```
+
+   2. Load static directory in .html
+      - add `{% load static %}` to the top of the .html
+   3. link static css file connection
+      - Add the following to the .html head
+      - `<link rel="stylesheet" href="{% static 'cars/custom.css' %}">`
+      - You can then add the relevant css styling to divs etc. as you usually would through classes.
+   4. Run migrate to load new app in settings.py file using the `python manage.pu migrate` command.
+
+- What if we wanted to apply css styling to an individual form item?
+- This can be achieved through widgets!
+
+### **Editing Form Items and Setting Styling using Widgets:**
+
+- Widget's can be parsed in as an argument to the form items defined in the forms.py file within the app.
+- Additional attributes can then be parsed into the widget itself to style the object. E.g. assuming a static CSS file has been loaded in the HTML template, a custom class call or assigning other styling options could be made for an individual form element . E.g. As can be seen by the 'review' form element.
+
+   ```
+      from django import forms
+
+      class ReviewForm(forms.Form):
+         first_name = forms.CharField(label='First Name',max_length=100)
+         last_name = forms.CharField(label='Last Name',max_length=100)
+         email = forms.EmailField(label='Email')
+         review = forms.CharField(label='Please write your review here',
+                                 widget=forms.Textarea(attrs={
+                                                         'class':'my_form',
+                                                         'row':'18',
+                                                         'cols':'80',    
+                                                      }))
+   ```
+
+[Full list of widgets can be found here](https://docs.djangoproject.com/en/4.2/ref/forms/widgets/)
+
+<br><br>
+
+## **Model Forms:**
+
+- Often, we use forms to directly interact with a model - such as creating a new instance of a data point inside a model.
+- Fortunately, Django provides the `ModelForm` class which automatically creates a Form with fields connected to each model field.
 
 
+1. Create a model. E.g.
 
+      ```
+         from django.db import models
 
+         # Create your models here.
+         class Review(models.Model):
+            first_name = models.CharField(max_length=30)
+            last_name = models.CharField(max_length=30)
+            stars = models.IntegerField()
+      ```
+
+2. (Optional by advised) Ensure form is connected to admin so it can be viewed by superuser.
+
+   ```
+      from django.contrib import admin
+      from .models import Review
+      # Register your models here.
+
+      admin.site.register(Review)
+   ```
+
+3. Connect forms.py to the model using the Meta Class:
+   - Note, adding a fields attribute allows you to select a subset of the fields you want as a list. e.g.
+
+   ```
+      from django import forms
+      from .models import Review
+
+      class ReviewForm(forms.ModelForm):
+         class Meta:
+            model = Review
+            fields = ['first_name','last_name']
+   ```
