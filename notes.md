@@ -82,6 +82,12 @@
   - [**UpdateView:**](#updateview)
   - [**Delete View**](#delete-view)
 - [**User Authentication:**](#user-authentication)
+  - [**Adding groups/ user as an admin:**](#adding-groups-user-as-an-admin)
+  - [**Automatically created URLs:**](#automatically-created-urls)
+  - [**User Authenticated Views:**](#user-authenticated-views)
+    - [Using if statements to create custom pages.](#using-if-statements-to-create-custom-pages)
+    - [**Function Based View - Authentication:**](#function-based-view---authentication)
+    - [**Class Based View - Authentication:**](#class-based-view---authentication)
 
 
 
@@ -1761,3 +1767,133 @@ DETAILEDVIEW:
 
 # **User Authentication:**
 
+- Ensure that INSTALLED_APPS includes: (should be enabled by default)
+  - `django.contrib.auth`
+  - `django.contrib.contenttypes`
+
+- In addition, notice that there is also preinstalled middleware (also shown in settings.py), to support authentication. E.g.
+  - `...SessionMiddleware`
+  - `...AuthenticationMiddleware`
+
+
+## **Adding groups/ user as an admin:**
+
+- log into the admin page
+- Go to groups → add Group (create a group)
+- Go to users → add User (create user)
+- Once created, scroll down and add the user to the group!
+
+<br>
+
+## **Automatically created URLs:**
+
+- by adding the following to the project level urls page:
+  - `path('accounts/', include('django.contrib.auth.urls'))`
+- We automatically add all of the following urls:
+- Note, whilst the urls and views have been setup automatically for us, we still need to create the HTML templates.
+  
+```
+accounts/ login/ [name='login']
+accounts/ logout/ [name='logout']
+accounts/ password_change/ [name='password_change']
+accounts/ password_change/done/ [name='password_change_done']
+accounts/ password_reset/ [name='password_reset']
+accounts/ password_reset/done/ [name='password_reset_done']
+accounts/ reset/<uidb64>/<token>/ [name='password_reset_confirm']
+accounts/ reset/done/ [name='password_reset_complete']
+```
+
+- Create a templates folder at the level of the site.. I.e. in this case, within library the super folder
+- The default sub folder name is 'registration' - create it!
+- Ensure that the templates file is registered in settings.py
+  - I.e. add `'DIRS': [os.path.join(BASE_DIR,'templates')],` to the templates section of the settings file
+
+- Now you can start creating the templates. E.g for the login template: You can add a file under `project_name/templates/registration/login.html`
+
+```
+   {% if form.errors %}
+      <p>Your username or password was incorrect. Try again.</p>
+   {% endif %}
+
+   {% if next %}
+      {% if user.is_authenticated %}
+         <p>You don't have permission for this page</p>
+      {% else %}
+         <p>Please login to see this page</p>
+      {% endif %}
+   {% endif %}
+
+   <form method='POST' action="{% url 'login' %}">
+      {% csrf_token %}
+      {{form.username.label}}
+      {{form.username}}
+
+      {{form.password.label}}
+      {{form.password}}
+      <input type="submit" value="Login">
+      <input type="hidden" name="next" value="{{next}}">
+   </form>
+```
+
+- When login in, you are automatically forwarded to to the accounts/profile/ url. To override this, you can add a `LOGIN_REDIRECT_URL` to the settings.py file. E.g.
+
+```
+LOGIN_REDIRECT_URL = '/'
+```
+
+## **User Authenticated Views:**
+
+- There are two ways to do this:
+  1. Function based views - decorators
+  2. Class based views - mixins
+
+### Using if statements to create custom pages.
+
+- Use if statement: e.g.
+
+```
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Index</title>
+   </head>
+   <body>
+      <h1>Home Page</h1>
+      <p>Total Books: {{num_books}}</p>
+      <p>Num Available: {{num_instances_avail}}</p>
+      {% if user.is_authenticated %}
+         <p>You are logged in</p>
+         <p>Welcome {{user.get_username}}</p>
+         <a href="{% url 'logout' %}?next={{request.path}}">Logout!</a>
+      {% else %}
+         <p>You are not logged in</p>
+         <a href="{% url 'login' %}?next={{request.path}}">Login!</a>
+      {% endif %}
+   </body>
+   </html>
+```
+
+### **Function Based View - Authentication:**
+
+- Function views make use of decorators when requiring authentication
+
+```
+   from django.contrib.auth.decorators import login_required
+
+   @login_required
+   def my_view(request):
+      return render(request,'catalogue/my_view.html)
+```
+
+### **Class Based View - Authentication:**
+
+- Function views make use of mixins when requiring authentication
+
+```
+   from django.contrib.auth.mixins import LoginRequiredMixin
+
+   class BookCreate(LoginRequiredMixin, CreateView):
+      model = Book
+      fields = '__all__'
+```

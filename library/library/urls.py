@@ -23,4 +23,5 @@ urlpatterns = [
     
     # www.example.com → example.com/app 
     path('', RedirectView.as_view(url='catalogue/')),
+    path('accounts/', include('django.contrib.auth.urls'))
 ]
