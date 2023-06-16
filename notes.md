@@ -81,6 +81,7 @@
     - [**DetailView:**](#detailview)
   - [**UpdateView:**](#updateview)
   - [**Delete View**](#delete-view)
+- [**User Authentication:**](#user-authentication)
 
 
 
@@ -1754,4 +1755,9 @@ DETAILEDVIEW:
 - see docs
 
 ## **Delete View**
+
+
+<br><br>
+
+# **User Authentication:**
 
