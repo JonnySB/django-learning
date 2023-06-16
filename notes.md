@@ -80,6 +80,7 @@
     - [**ListView:**](#listview)
     - [**DetailView:**](#detailview)
   - [**UpdateView:**](#updateview)
+  - [**Delete View**](#delete-view)
 
 
 
@@ -1749,4 +1750,8 @@ DETAILEDVIEW:
 <br>
 
 ## **UpdateView:**
+
+- see docs
+
+## **Delete View**
 
