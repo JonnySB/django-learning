@@ -75,7 +75,11 @@
   - [**Class Based Views Basics**](#class-based-views-basics)
     - [**Connecting to a template**](#connecting-to-a-template)
   - [**FormView:**](#formview)
-  - [**CreateView:**](#createview)
+  - [**Class Based Model Views:**](#class-based-model-views)
+    - [**CreateView:**](#createview)
+    - [**ListView:**](#listview)
+    - [**DetailView:**](#detailview)
+  - [**UpdateView:**](#updateview)
 
 
 
@@ -1607,4 +1611,142 @@ To connect to a template using class based views, a few simple steps can be foll
    ]
 ```
 
-## **CreateView:**
+## **Class Based Model Views:**
+
+- The following lectures covers common model based operations such as Create, Detail, Update, Delete and List.
+- Django provides CBVs that automatically create the appropriate views, forms and context objects for predefined template names by simply being connected to a model.
+- IMPORTANT NOTE:
+  - Because the classes are designed to be simple, the views require a template name to follow a specific pattern, for example:
+    - model_form.html
+      - teacher_form.html
+  - This is often confusing because it seems like django magically know a template file existed but in fact it is just looking for a specific naming pattern.
+
+<br>
+
+### **CreateView:**
+
+1. Create model:
+
+```
+   from django.db import models
+
+   # Create your models here.
+   class Teacher(models.Model):
+      first_name = models.CharField(max_length=30)
+      last_name = models.CharField(max_length=30)
+      subject = models.CharField(max_length=30)
+
+      def __str__(self):
+         return f"{self.first_name} {self.last_name} teaches {self.subject}"
+```
+
+2. Create view by importing `CreateView` from `django.views.generic` and inheriting it in the view: e.g.
+
+```
+   class TeacherCreateView(CreateView):
+      model = Teacher
+      # looks for: model_form.html (i.e. teacher_form.html)
+      fields = "__all__"
+      success_url = reverse_lazy('classroom:thank_you')
+```
+
+- note, django will now automatically look for a teacher_form.html in the templates section of the app.
+
+3. Create the model_form.html (teacher_form.html) in project/app/templates/app/ directory.
+
+```
+   <h1>Teacher Form</h1>
+   <form method="POST">
+      {% csrf_token %}
+      {{form.as_p}}
+      <input type="submit" value="submit">
+   </form>
+```
+
+4. Add to urls:
+   - `path('create_teacher',views.TeacherCreateView.as_view(),name='create_teacher')]`
+
+<br>
+
+### **ListView:**
+
+- Will list all the instances of a particular model.
+  
+1. Continuing on using the Teacher model defined above.
+
+2. Create view by importing `ListView` from `django.views.generic` and inheriting it in the view: e.g.
+
+```
+   class TeacherListView(ListView):
+      # looks for: model_list.html (i.e. teacher_list.html)
+      model = Teacher
+      queryset = Teacher.objects.order_by('first_name')
+      context_object_name = 'teacher_list'
+```
+
+- queryset allows you to pass queryset arguments, such as order_by
+- context_object_name changes the default name in the html from object_list to whatever you set it as. Recommended for larger code bases.
+
+3. Create the model_list.html (teacher_list.html) in the project/app/templates/app/ directory
+
+```
+   <h1>List of Teachers (ListView)</h1>
+   <ul>
+      {% for teacher in teacher_list %}
+         <li>{{teacher.first_name}} {{teacher.last_name}}</li>
+      {% endfor %}
+   </ul>
+```
+
+4. Connect url: `path('list_teacher', views.TeacherListView.as_view(), name='list_teacher'),`
+
+<br>
+
+### **DetailView:**
+
+- View a single instance of an entry inside of a model.
+- Look
+
+1. Set up details view
+   - Note the model template will automatically be named model_detail.html
+   - And the variable nome will be a lowercase version of the model name. E.g. Teacher becomes teacher.
+
+```
+   class TeacherDetailView(DetailView):
+      # Return only one model entry (PK) - hence URL needs to be unique
+      # looks for: model_detail.html (i.e. teacher_detail.html)
+      model = Teacher
+      # PK → {{teacher}}
+```
+
+2. Use unique identifier (e.g. pk) to single out specific db item in both urls and the html template
+
+URLS:
+```
+   # goes inside urlpatterns - removed to save space
+   # domain.com/classroom/teacher_detail/<pk>
+   path('teacher_detail/<int:pk>',
+      views.TeacherDetailView.as_view(),
+      name='teacher_detail')
+```
+
+LISTVIEW - Creating links to detailed view:
+```
+   <h1>List of Teachers (ListView)</h1>
+   <ul>
+      {% for teacher in teacher_list %}
+         <li><a href="/classroom/teacher_detail/{{teacher.id}}">{{teacher.first_name}} {{teacher.last_name}}</a></li>
+      {% endfor %}
+   </ul>
+```
+
+DETAILEDVIEW:
+```
+   <h1>Detail view for a Teacher</h1>
+   {{teacher}}
+```
+
+<br>
+
+## **UpdateView:**
+
